@@ -28,9 +28,11 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
     err = handlePgError(err);
   }
 
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'INTERNAL_ERROR';
-  err.message = err.message || 'Internal error has occurred';
+  if (err instanceof CustomError === false) {
+    err.statusCode = 500;
+    err.status = 'INTERNAL_ERROR';
+    err.message = 'Internal error has occurred';
+  }
 
   res.status(err.statusCode).json({
     status: err.status,

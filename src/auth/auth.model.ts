@@ -15,6 +15,10 @@ export const getUserById = async (id: number): Promise<User> => {
   return db('users').where({ id }).first();
 };
 
+export const getUserByUsername = async (username: string): Promise<User> => {
+  return db('users').where({ username: username }).first();
+}
+
 export const createUser = async (user: User): Promise<number[]> => {
   return db('users').insert(user);
 };
