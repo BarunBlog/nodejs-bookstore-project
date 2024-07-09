@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler';
 import authRouter from './auth/auth.route';
 import logger from './utils/logger';
+import authorRouter from './author/author.route';
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Register routes
 app.use('/auth', authRouter);
+app.use('/authors', authorRouter);
 
 // Register the centralized error handling middleware
 app.use(errorHandler);

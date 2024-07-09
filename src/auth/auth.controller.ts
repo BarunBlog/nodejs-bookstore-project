@@ -9,7 +9,7 @@ import { JwtPayload } from './interface/jwt-payload.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { generateToken } from '../utils/token';
 
-export const registerUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
