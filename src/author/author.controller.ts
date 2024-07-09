@@ -6,6 +6,41 @@ import logger from '../utils/logger';
 import { AuthenticatedRequest } from '../middleware/auth-middleware';
 import { validationResult } from 'express-validator';
 
+export const getAllAuthors = async (req: Request, res: Response, next: NextFunction) => {
+  logger.info('Start getting all authors from the database');
+
+  try {
+    const authors = await authorModel.getAllAuthors();
+    res.status(200).json(authors);
+  } catch (err) {
+    logger.error(err);
+    next(new CustomError('Failed to retrieve authors', 500));
+  }
+};
+
+export const getAuthorDetails = async (req: Request, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  logger.info('Start getting the author details by id');
+
+  try {
+    const authorId = parseInt(req.params.id);
+
+    const author = await authorModel.getAuthorById(authorId);
+    if (!author) {
+        logger.warn("Author not found with the given id")
+      return next(new CustomError('Author not found', 404));
+    }
+
+    res.status(200).json(author);
+  } catch (err) {
+    next(new CustomError('Failed to retrieve author', 500));
+  }
+};
+
 export const createAuthor = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
 
@@ -26,17 +61,5 @@ export const createAuthor = async (req: AuthenticatedRequest, res: Response, nex
   } catch (err) {
     logger.error(err);
     next(err);
-  }
-};
-
-export const getAllAuthors = async (req: Request, res: Response, next: NextFunction) => {
-  logger.info('Start getting all authors from the database');
-
-  try {
-    const authors = await authorModel.getAllAuthors();
-    res.status(200).json(authors);
-  } catch (err) {
-    logger.error(err);
-    next(new CustomError('Failed to retrieve authors', 500));
   }
 };
