@@ -1,6 +1,6 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
-import { errorHandler } from './middleware/errorHandler';
+import { errorHandler } from './middleware/error-handler';
 import authRouter from './auth/auth.route';
 import logger from './utils/logger';
 import authorRouter from './author/author.route';

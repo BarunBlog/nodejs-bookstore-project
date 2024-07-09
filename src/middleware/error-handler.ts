@@ -10,13 +10,16 @@ const handlePgError = (err: DatabaseError) => {
   let statusCode = 500;
 
   if (err.code === '23505') {
-    // unique violation
+    // unique constraint violation
     if (err.constraint === `users_username_unique`) {
       message = 'Username should be unique';
       statusCode = 400;
     } else if (err.constraint === `users_email_unique`) {
       message = 'Email should be unique';
       statusCode = 400;
+    } else if (err.constraint === `authors_user_id_unique`) {
+      message = 'You already have created an author account';
+      statusCode = 409;
     }
   }
 

@@ -8,21 +8,26 @@ export interface Author {
 }
 
 export const getAllAuthors = async (): Promise<Author[]> => {
-  return knex('authors').select('*');
+  return await knex('authors').select('*');
 };
 
 export const getAuthorById = async (id: number): Promise<Author> => {
-  return knex('authors').where({ id }).first();
+  return await knex('authors').where({ id }).first();
+};
+
+export const getAuthorByUserId = async (userId: number): Promise<Author | null> => {
+  const author = await knex('authors').where({ user_id: userId }).first();
+  return author || null;
 };
 
 export const createAuthor = async (author: Author): Promise<number[]> => {
-  return knex('authors').insert(author);
+  return await knex('authors').insert(author);
 };
 
 export const updateAuthor = async (id: number, author: Partial<Author>): Promise<number> => {
-  return knex('authors').where({ id }).update(author);
+  return await knex('authors').where({ id }).update(author);
 };
 
 export const deleteAuthor = async (id: number): Promise<number> => {
-  return knex('authors').where({ id }).delete();
+  return await knex('authors').where({ id }).delete();
 };
