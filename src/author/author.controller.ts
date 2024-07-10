@@ -5,6 +5,7 @@ import { Author } from './author.model';
 import logger from '../utils/logger';
 import { AuthenticatedRequest } from '../middleware/auth-middleware';
 import { validationResult } from 'express-validator';
+import { AuthorWithBooks } from './interface/author-with-books.interface';
 
 export const getAllAuthors = async (req: Request, res: Response, next: NextFunction) => {
   logger.info('Start getting all authors from the database');
@@ -129,5 +130,17 @@ export const deleteAuthor = async (req: AuthenticatedRequest, res: Response, nex
   } catch (err) {
     logger.error(err);
     next(new CustomError('Failed to delete the author', 500));
+  }
+};
+
+export const getAllAuthorsWithBooks = async (req: Request, res: Response, next: NextFunction) => {
+  logger.info('Start getting all authors and their books from the database');
+
+  try {
+    const authorsWithBooks: AuthorWithBooks[] = await authorModel.getAllAuthorsWithBooks();
+    res.status(200).json(authorsWithBooks);
+  } catch (err) {
+    logger.error(err);
+    next(new CustomError('Failed to retrieve authors', 500));
   }
 };

@@ -9,6 +9,7 @@ import { authorParamValidator } from './validator/author-param.validator';
 const authorRouter = express.Router();
 
 authorRouter.get('/', AuthorController.getAllAuthors);
+authorRouter.get('/all-author-with-books', AuthorController.getAllAuthorsWithBooks);
 authorRouter.get('/:id', authorParamValidator, AuthorController.getAuthorDetails);
 authorRouter.post('/', authMiddleware, createAuthorValidator, AuthorController.createAuthor);
 authorRouter.put('/:id', authMiddleware, authorParamValidator, updateAuthorValidator, AuthorController.updateAuthor);
