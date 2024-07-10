@@ -71,6 +71,8 @@ export const updateAuthor = async (req: AuthenticatedRequest, res: Response, nex
     return res.status(400).json({ errors: errors.array() });
   }
 
+  logger.info('Start updating the author');
+
   const userId = req.user?.id;
   const authorId = parseInt(req.params.id);
 
@@ -87,11 +89,45 @@ export const updateAuthor = async (req: AuthenticatedRequest, res: Response, nex
       return next(new CustomError('You are not authorized to update this author', 403));
     }
 
-    // Merge the request body the existing author
+    // Update the author ------------------------------------------------------------------------------------
     const updatedAuthor = { ...existingAuthor, ...req.body };
     await authorModel.updateAuthor(authorId, updatedAuthor);
     res.status(200).json({ message: 'Author updated successfully' });
   } catch (err) {
     next(new CustomError('Failed to update author', 500));
+  }
+};
+
+export const deleteAuthor = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  logger.info('Start deleting the author');
+
+  const userId = req.user?.id;
+  const authorId = parseInt(req.params.id);
+
+  try {
+    // Check if the author exists and belongs to the authenticated user -------------------------------------
+    const existingAuthor = await authorModel.getAuthorById(authorId);
+    if (!existingAuthor) {
+      logger.warn('Author not found, please check author id again.');
+      return next(new CustomError('Author not found', 404));
+    }
+
+    if (existingAuthor.user_id !== userId) {
+      logger.warn('You are not authorized to delete this author');
+      return next(new CustomError('You are not authorized to delete this author', 403));
+    }
+
+    // Delete the author ------------------------------------------------------------------------------------
+    await authorModel.deleteAuthor(authorId);
+    res.status(200).json({ message: 'Author deleted successfully' });
+  } catch (err) {
+    logger.error(err);
+    next(new CustomError('Failed to delete the author', 500));
   }
 };
