@@ -8,6 +8,41 @@ import { Book } from './book.model';
 import logger from '../utils/logger';
 import { CustomError } from '../utils/custom-error';
 
+export const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
+  logger.info('Start getting all books from the database');
+
+  try {
+    const books = await bookModel.getAllBooks();
+    res.status(200).json(books);
+  } catch (err) {
+    logger.error(err);
+    next(new CustomError('Failed to retrieve books', 500));
+  }
+};
+
+export const getBookDetails = async (req: Request, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  logger.info('Start getting the book details by id');
+
+  try {
+    const bookId = parseInt(req.params.id);
+
+    const book = await bookModel.getBookById(bookId);
+    if (!book) {
+      logger.warn('Book not found with the given id');
+      return next(new CustomError('Book not found', 404));
+    }
+
+    res.status(200).json(book);
+  } catch (err) {
+    next(new CustomError('Failed to retrieve the book', 500));
+  }
+};
+
 export const createBook = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
 
