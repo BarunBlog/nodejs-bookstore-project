@@ -1,13 +1,4 @@
-import { body, param } from 'express-validator';
-
-export const validateAuthorId = [
-  param('id')
-    .isInt({ gt: 0 })
-    .withMessage('author id must be an integer')
-    .notEmpty()
-    .withMessage('author id is required')
-    .toInt(),
-];
+import { body } from 'express-validator';
 
 export const updateAuthorValidator = [
   body('name').optional().isString().withMessage('Name must be a string'),

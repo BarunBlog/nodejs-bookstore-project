@@ -82,3 +82,37 @@ export const createBook = async (req: AuthenticatedRequest, res: Response, next:
     next(new CustomError('Failed to create the book', 500));
   }
 };
+
+export const updateBook = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  logger.info('Start updating the book');
+
+  const userId = req.user?.id;
+  const bookId = parseInt(req.params.id);
+
+  try {
+    // Check if the book belongs to the authenticated user --------------------------------------------------
+    const book = await bookModel.getBook({
+      book_id: bookId,
+      user_id: userId,
+    });
+
+    if (!book) {
+      logger.warn('You are not the author of this book');
+      return next(new CustomError('You are not the author of this book', 403));
+    }
+
+    // Update the book --------------------------------------------------------------------------------------
+    const updateBook = { ...book, ...req.body };
+    await bookModel.updateBook(bookId, updateBook);
+    res.status(200).json({ message: 'Book updated successfully' });
+  } catch (err) {
+    logger.error(err);
+    next(new CustomError('Failed to update the book', 500));
+  }
+};

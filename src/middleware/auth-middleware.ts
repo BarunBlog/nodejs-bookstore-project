@@ -33,6 +33,8 @@ const authMiddleware = async (req: AuthenticatedRequest, res: Response, next: Ne
     const { password, ...userWithoutPassword } = user;
     req.user = userWithoutPassword;
 
+    logger.info('User authorized');
+
     next();
   } catch (err) {
     return next(new CustomError('Authentication failed.', 500));
