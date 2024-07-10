@@ -20,6 +20,20 @@ export const getAllBooks = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
+export const getBooksByAuthorId = async (req: Request, res: Response, next: NextFunction) => {
+  const authorId = parseInt(req.params.id);
+
+  logger.info(`Start getting books by the author id ${authorId}`);
+
+  try {
+    const books = await bookModel.getBooks({ author_id: authorId });
+    res.status(200).json(books);
+  } catch (error) {
+    logger.error(error);
+    next(new CustomError('Failed to retrieve books', 500));
+  }
+};
+
 export const getBookDetails = async (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
