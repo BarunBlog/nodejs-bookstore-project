@@ -10,6 +10,12 @@ export interface Book {
   author_id: number;
 }
 
+export interface BookWithAuthor extends Book {
+  author_name: string;
+  author_bio: string;
+  author_birthdate: string;
+}
+
 export const getAllBooks = async (): Promise<Book[]> => {
   return await knex('books').select('*');
 };
@@ -32,8 +38,34 @@ export const getBooks = async (getBooksPayload: getBooksPayload): Promise<Book[]
   return query;
 };
 
-export const getBookById = async (id: number): Promise<Book> => {
-  return await knex('books').where({ id }).first();
+export const getBookById = async (id: number): Promise<BookWithAuthor | null> => {
+  const result = await knex('books')
+    .join('authors', 'books.author_id', 'authors.id')
+    .select(
+      'books.id',
+      'books.title',
+      'books.description',
+      'books.published_date',
+      'books.author_id',
+      'authors.name as author_name',
+      'authors.bio as author_bio',
+      'authors.birthdate as author_birthdate'
+    )
+    .where('books.id', id)
+    .first();
+
+  return result
+    ? {
+        id: result.id,
+        title: result.title,
+        description: result.description,
+        published_date: result.published_date,
+        author_id: result.author_id,
+        author_name: result.author_name,
+        author_bio: result.author_bio,
+        author_birthdate: result.author_birthdate,
+      }
+    : null;
 };
 
 export const getBook = async (getBookPayload: getBookPayload): Promise<Book> => {
