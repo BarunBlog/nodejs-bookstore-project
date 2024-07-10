@@ -4,7 +4,7 @@ export interface Author {
   id?: number;
   name: string;
   bio?: string;
-  birthdate: Date;
+  birthdate: string;
   user_id: number;
 }
 
