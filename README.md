@@ -6,6 +6,15 @@ This is the completed backend component of the Bookstore system application buil
 
 NodeJS, ExpressJS, and TypeScript, and PostgreSQL as the database.
 
+## Features
+
+- JWT Authentication
+- CRUD operations for authors and books
+- Pagination for listing authors and books
+- Input validation using `express-validator`
+- Error handling with custom error classes
+- Logging with Winston
+
 # Prerequisites
 
 1. To run this project you need to install NodeJs and PostgreSQL on your system.
