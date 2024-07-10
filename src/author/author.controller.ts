@@ -42,6 +42,25 @@ export const getAuthorDetails = async (req: Request, res: Response, next: NextFu
   }
 };
 
+export const getAuthorDetailsWithBooks = async (req: Request, res: Response, next: NextFunction) => {
+  logger.info('Start getting author and their books from the database');
+  const authorId = parseInt(req.params.id);
+
+  try {
+    const authorWithBooks: AuthorWithBooks | null = await authorModel.getAuthorWithBooksById(authorId);
+
+    if (!authorWithBooks) {
+      logger.warn(`Author with ID ${authorId} not found`);
+      return next(new CustomError('Author not found', 404));
+    }
+
+    res.status(200).json(authorWithBooks);
+  } catch (err) {
+    logger.error(err);
+    next(new CustomError('Failed to retrieve author', 500));
+  }
+};
+
 export const createAuthor = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
 

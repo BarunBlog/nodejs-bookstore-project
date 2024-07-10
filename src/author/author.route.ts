@@ -11,6 +11,7 @@ const authorRouter = express.Router();
 authorRouter.get('/', AuthorController.getAllAuthors);
 authorRouter.get('/all-author-with-books', AuthorController.getAllAuthorsWithBooks);
 authorRouter.get('/:id', authorParamValidator, AuthorController.getAuthorDetails);
+authorRouter.get('/:id/author-with-books', authorParamValidator, AuthorController.getAuthorDetailsWithBooks);
 authorRouter.post('/', authMiddleware, createAuthorValidator, AuthorController.createAuthor);
 authorRouter.put('/:id', authMiddleware, authorParamValidator, updateAuthorValidator, AuthorController.updateAuthor);
 authorRouter.delete('/:id', authMiddleware, authorParamValidator, AuthorController.deleteAuthor);

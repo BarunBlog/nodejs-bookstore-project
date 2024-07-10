@@ -60,7 +60,7 @@ export const getAllAuthorsWithBooks = async (): Promise<AuthorWithBooks[]> => {
         bio: row.author_bio,
         birthdate: row.author_birthdate,
         user_id: row.author_user_id,
-        books: []
+        books: [],
       };
     }
 
@@ -70,10 +70,55 @@ export const getAllAuthorsWithBooks = async (): Promise<AuthorWithBooks[]> => {
         title: row.book_title,
         description: row.book_description,
         published_date: row.book_published_date,
-        author_id: row.book_author_id
+        author_id: row.book_author_id,
       });
     }
   });
 
   return Object.values(authorsMap);
+};
+
+export const getAuthorWithBooksById = async (authorId: number): Promise<AuthorWithBooks | null> => {
+  const results = await knex('authors')
+    .leftJoin('books', 'authors.id', 'books.author_id')
+    .select(
+      'authors.id as author_id',
+      'authors.name as author_name',
+      'authors.bio as author_bio',
+      'authors.birthdate as author_birthdate',
+      'authors.user_id as author_user_id',
+      'books.id as book_id',
+      'books.title as book_title',
+      'books.description as book_description',
+      'books.published_date as book_published_date',
+      'books.author_id as book_author_id'
+    )
+    .where('authors.id', authorId);
+
+  if (results.length === 0) {
+    return null;
+  }
+
+  const authorWithBooks: AuthorWithBooks = {
+    id: results[0].author_id,
+    name: results[0].author_name,
+    bio: results[0].author_bio,
+    birthdate: results[0].author_birthdate,
+    user_id: results[0].author_user_id,
+    books: [],
+  };
+
+  results.forEach(row => {
+    if (row.book_id) {
+      authorWithBooks.books.push({
+        id: row.book_id,
+        title: row.book_title,
+        description: row.book_description,
+        published_date: row.book_published_date,
+        author_id: row.book_author_id,
+      });
+    }
+  });
+
+  return authorWithBooks;
 };
