@@ -5,10 +5,11 @@ import { authMiddleware } from '../middleware/auth-middleware';
 import { createAuthorValidator } from './validator/create-author.validator';
 import { updateAuthorValidator } from './validator/update-author.validator';
 import { authorParamValidator } from './validator/author-param.validator';
+import { paginationQueryParamValidator } from '../utils/validator/pagination-query-param.validator';
 
 const authorRouter = express.Router();
 
-authorRouter.get('/', AuthorController.getAllAuthors);
+authorRouter.get('/', paginationQueryParamValidator, AuthorController.getAllAuthors);
 authorRouter.get('/all-author-with-books', AuthorController.getAllAuthorsWithBooks);
 authorRouter.get('/:id', authorParamValidator, AuthorController.getAuthorDetails);
 authorRouter.get('/:id/author-with-books', authorParamValidator, AuthorController.getAuthorDetailsWithBooks);

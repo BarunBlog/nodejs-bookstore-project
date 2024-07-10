@@ -8,11 +8,26 @@ import { validationResult } from 'express-validator';
 import { AuthorWithBooks } from './interface/author-with-books.interface';
 
 export const getAllAuthors = async (req: Request, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+
   logger.info('Start getting all authors from the database');
 
   try {
-    const authors = await authorModel.getAllAuthors();
-    res.status(200).json(authors);
+    const { authors, total } = await authorModel.getAllAuthors(page, limit);
+    res.status(200).json({
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil((total as number) / limit),
+      authors,
+    });
   } catch (err) {
     logger.error(err);
     next(new CustomError('Failed to retrieve authors', 500));
