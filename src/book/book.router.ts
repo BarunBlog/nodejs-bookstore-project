@@ -11,5 +11,6 @@ bookRouter.get('/', BookController.getAllBooks);
 bookRouter.get('/:id', bookParamValidator, BookController.getBookDetails);
 bookRouter.post('/', authMiddleware, createBookValidator, BookController.createBook);
 bookRouter.put('/:id', authMiddleware, bookParamValidator, updateBookValidator, BookController.updateBook);
+bookRouter.delete('/:id', authMiddleware, bookParamValidator, BookController.deleteBook);
 
 export default bookRouter;

@@ -48,5 +48,5 @@ export const updateBook = async (id: number, book: Partial<Book>): Promise<numbe
 };
 
 export const deleteBook = async (id: number): Promise<number> => {
-  return await knex('book').where({ id }).delete();
+  return await knex('books').where({ id }).delete();
 };

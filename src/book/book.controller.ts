@@ -116,3 +116,36 @@ export const updateBook = async (req: AuthenticatedRequest, res: Response, next:
     next(new CustomError('Failed to update the book', 500));
   }
 };
+
+export const deleteBook = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  logger.info('Start deleting the book');
+
+  const userId = req.user?.id;
+  const bookId = parseInt(req.params.id);
+
+  try {
+    // Check if the book belongs to the authenticated user --------------------------------------------------
+    const book = await bookModel.getBook({
+      book_id: bookId,
+      user_id: userId,
+    });
+
+    if (!book) {
+      logger.warn('You are not the author of this book');
+      return next(new CustomError('You are not the author of this book', 403));
+    }
+
+    // Delete the Book --------------------------------------------------------------------------------------
+    await bookModel.deleteBook(bookId);
+    res.status(200).json({ message: 'Book deleted successfully' });
+  } catch (err) {
+    logger.error(err);
+    next(new CustomError('Failed to delete the book', 500));
+  }
+};
