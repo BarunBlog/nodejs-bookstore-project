@@ -6,6 +6,7 @@ import logger from '../utils/logger';
 import { AuthenticatedRequest } from '../middleware/auth-middleware';
 import { validationResult } from 'express-validator';
 import { AuthorWithBooks } from './interface/author-with-books.interface';
+import { PaginationResponse } from '../utils/interface/pagination-response.interface';
 
 export const getAllAuthors = async (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
@@ -16,18 +17,21 @@ export const getAllAuthors = async (req: Request, res: Response, next: NextFunct
 
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
+  const offset = (page - 1) * limit;
 
   logger.info('Start getting all authors from the database');
 
   try {
-    const { authors, total } = await authorModel.getAllAuthors(page, limit);
-    res.status(200).json({
-      page,
-      limit,
-      total,
+    const { authors, total } = await authorModel.getAllAuthors(offset, limit);
+    const response: PaginationResponse<Author> = {
+      data: authors,
+      page: page,
+      limit: limit,
+      total: total as number,
       totalPages: Math.ceil((total as number) / limit),
-      authors,
-    });
+    };
+
+    res.status(200).json(response);
   } catch (err) {
     logger.error(err);
     next(new CustomError('Failed to retrieve authors', 500));

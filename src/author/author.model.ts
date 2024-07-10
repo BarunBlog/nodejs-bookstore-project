@@ -9,9 +9,7 @@ export interface Author {
   user_id: number;
 }
 
-export const getAllAuthors = async (page: number, limit: number) => {
-  const offset = (page - 1) * limit;
-
+export const getAllAuthors = async (offset: number, limit: number) => {
   const authors = await knex('authors').select('authors.*').limit(limit).offset(offset);
 
   const countResult = await knex('authors').count('* as count').first();

@@ -16,8 +16,13 @@ export interface BookWithAuthor extends Book {
   author_birthdate: string;
 }
 
-export const getAllBooks = async (): Promise<Book[]> => {
-  return await knex('books').select('*');
+export const getAllBooks = async (offset: number, limit: number) => {
+  const books = await knex('books').select('books.*').limit(limit).offset(offset);
+
+  const countResult = await knex('books').count('* as count').first();
+  const total = countResult ? countResult.count : 0;
+
+  return { books, total };
 };
 
 export const getBooks = async (getBooksPayload: getBooksPayload): Promise<Book[]> => {

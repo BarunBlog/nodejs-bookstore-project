@@ -7,13 +7,27 @@ import { Author } from '../author/author.model';
 import { Book } from './book.model';
 import logger from '../utils/logger';
 import { CustomError } from '../utils/custom-error';
+import { PaginationResponse } from '../utils/interface/pagination-response.interface';
 
 export const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
   logger.info('Start getting all books from the database');
 
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const offset = (page - 1) * limit;
+
   try {
-    const books = await bookModel.getAllBooks();
-    res.status(200).json(books);
+    const { books, total } = await bookModel.getAllBooks(offset, limit);
+
+    const response: PaginationResponse<Book> = {
+      data: books,
+      page: page,
+      limit: limit,
+      total: total as number,
+      totalPages: Math.ceil((total as number) / limit),
+    };
+
+    res.status(200).json(response);
   } catch (err) {
     logger.error(err);
     next(new CustomError('Failed to retrieve books', 500));
