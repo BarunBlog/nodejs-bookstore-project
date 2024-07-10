@@ -5,6 +5,7 @@ export interface Author {
   name: string;
   bio?: string;
   birthdate: Date;
+  user_id: number;
 }
 
 export const getAllAuthors = async (): Promise<Author[]> => {
